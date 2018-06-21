@@ -6,8 +6,8 @@ classdef Quad2D
     properties (Constant,Hidden)
         % Constants developped to help choosing the number of points for
         % the circular discretisation of the spectrum.
-        gamma3 = exp(1)/2*0.8;
-        gamma4 = 1;
+        gamma = exp(1)/2*0.8; % In the article, I show that exp(1)/2 is sufficient. 
+        % In practice, exp(1)/2*0.8 seems to be enough. 
     end
     properties (Access = public)
         %rq; % The radial quadrature
@@ -30,7 +30,6 @@ classdef Quad2D
             else
                 % Constructor
                 ttime = tic;
-                %q2d.rq = radialQuad;
                 alpha= radialQuad.alpha;
                 rho = radialQuad.rho;
                 P = length(rho);
@@ -40,7 +39,7 @@ classdef Quad2D
                 alpha = alpha(2:end);
                 rho = rho(2:end);
                 
-                Ns = fix((Quad2D.gamma3 * rho.^(Quad2D.gamma4)  + (4*log(P*abs(alpha)/(tol+10^(-10)))))/2 + 1)*2+1;
+                Ns = fix((Quad2D.gamma * rho  + (4*log(P*abs(alpha)/(tol+10^(-10)))))/2 + 1)*2+1;
                 N = sum(Ns);
                 xxi_nu = zeros(N,2);
                 ww_nu = zeros(N,1);
@@ -66,9 +65,11 @@ classdef Quad2D
             fprintf('2D quadrature \n')
             fprintf('Number of quadrature points : %s\n',num2str(length(this.w_nu)))
         end
+        % Number of frequency samples
         function[out] = Nxi(this)
             out = length(this.w_nu);
         end
+        % Value of the functions at X(i,:) - Y(j,:)
         function[el] = elem(this,X,Y,i,j)
             qj = zeros(size(X,1),1);
             qj(j) = 1;
@@ -95,6 +96,7 @@ classdef Quad2D
             surf(X,Y,imag(Z));
             title('Imaginary part');
         end
+        % Addition of two 2D quadratures
         function[c] = plus(a,b)
             t = tic;
             c = Quad2D;
@@ -106,14 +108,7 @@ classdef Quad2D
             c.tol = a.tol + b.tol;
             c.time = toc(t);
         end
-        function[dx,dy] = grad(this)
-            dx = this;
-            dx.w_nu = this.w_nu.*(1i*this.xi_nu(:,1));
-            dx.offset = 0;
-            dy = this;
-            dy.w_nu = this.w_nu.*(1i*this.xi_nu(:,2));
-            dy.offset = 0;
-        end
+        % Value at a point in R^2
         function[out] = value(this,x)
             xxi_nu = this.xi_nu;
             ww_nu = this.w_nu;
@@ -126,6 +121,7 @@ classdef Quad2D
                 out = 0*size(x,1);
             end
         end
+        % Fast convolution
         function[q,time] = conv(this,x,y,V)
             % This function computes \sum_{j=1}^N f(x(i)-y(j)) V(j)
             % where f is the function approximated by this object.

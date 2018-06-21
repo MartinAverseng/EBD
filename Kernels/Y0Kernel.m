@@ -4,7 +4,7 @@ classdef Y0Kernel < Kernel
     
     properties (Access = public)
         C = 1;
-        R; %such that kernel =  x -> C*Y0(Rx)
+        R; %such that G(r) = C*bessely(0,R*r)
     end
     
     methods

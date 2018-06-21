@@ -5,7 +5,7 @@ classdef J0Kernel < Kernel
     
     properties
         R=1, C=1;
-        % Such that kernel =  x -> C*J0(Rx)
+        % Such that G(r) = C*besselj(0,R*r)
     end
     
     methods

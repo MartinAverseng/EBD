@@ -2,7 +2,7 @@ classdef ThinPlate < Kernel
     % Object of type kernel but optimized for ThinPlate so that the computation of the
     % radial quadrature goes faster
     properties (Access = public)
-        C = 1;  %such that kernel =  x -> x^2*log(x)
+        C = 1;  %such that G(r) = C*r^2*log(R*r)
         R = 1;
     end
     
@@ -44,14 +44,20 @@ classdef ThinPlate < Kernel
             out = Cmem*rq;
         end
         function[onlineEBD,rq,loc] = offlineEBD(this,X,Y,a,tol)
+            % Special way to handle the radial quadrature : we add a term
+            % in r^2 to enforce multi-Dirichlet condition.
             rMax = rMaxCalc(X,Y);
             x = X/rMax;
             y = Y/rMax;
-            k1 = ThinPlate(this.C*rMax^2,this.R*rMax) + X2kKernel(1,-this.C*(1+log(rMax*this.R))*rMax^2);
+            k1 = ThinPlate(this.C*rMax^2,this.R*rMax) +...
+                X2kKernel(1,-this.C*(1+log(rMax*this.R))*rMax^2); % adjust multi-Dirichlet condition.
             rq = RadialQuadrature(a,k1,tol);
             q2d = Quad2D(rq);
             loc = localCorrections(x,y,a,k1,rq,rMax,tol);
             onlineEBD = @(v)(q2d.conv(x,y,v) + loc*v + suppTerm(v));
+            
+            % We remove the added r^2 term by computing the convolution as
+            % follows:
             function[res] = suppTerm(alpha)
                 alphay = [alpha alpha].*y;
                 x2 = x(:,1).^2 + x(:,2).^2;
@@ -66,10 +72,18 @@ classdef ThinPlate < Kernel
     end
     methods (Static, Access = protected)
         function[res] = norm_func(a,b,R)
-            res = sqrt(2*pi*(...
-                -a ^ 4 * log(R * a) ^ 2 - a ^ 4 * log(R * a) / 0.2e1 ...
-                - a ^ 4 / 0.8e1 + b ^ 4 * log(R * b) ^ 2 +...
-                b ^ 4 * log(R * b) / 0.2e1 + b ^ 4 / 0.8e1));
+            % Found with Maple
+            if a==0
+                res = sqrt(2*pi*(...
+                    b ^ 4 * log(R * b) ^ 2 +...
+                    b ^ 4 * log(R * b) / 0.2e1 + b ^ 4 / 0.8e1));
+                
+            else
+                res = sqrt(2*pi*(...
+                    -a ^ 4 * log(R * a) ^ 2 - a ^ 4 * log(R * a) / 0.2e1 ...
+                    - a ^ 4 / 0.8e1 + b ^ 4 * log(R * b) ^ 2 +...
+                    b ^ 4 * log(R * b) / 0.2e1 + b ^ 4 / 0.8e1));
+            end
         end
         function[low,up] = gamma_est(~)
             % Helps the radial quadrature to guess the number of components

@@ -2,8 +2,8 @@ classdef X2kKernel < Kernel
     % Object of type kernel but optimized for log so that the computation of the 
     % radial quadrature goes faster
     properties (Access = public)
-        C = 1; % such that K = x -> C*X^{2k} 
-        k = 1;
+        C = 1; 
+        k = 1; % such that G(r) =C*r^(2*k) 
     end
     
     methods

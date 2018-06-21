@@ -1,6 +1,12 @@
 function [ A,T,a,timer ] = gramMatrix(a,rho)
-% [ A ] = gramMatrix(a,rho)
-% Returns the square matrix defined by
+% A  = gramMatrix(a,rho)
+% Inputs : 
+% - a : (scalar / array of size 2). If a = [a1,a2], the matrix contains the
+% scalar products on the ring {a1 < r < a2}. If a is scalar, a2 is taken as
+% 1. 
+% - rho : array of positive reals. 
+% Output : 
+% Returns the square matrix defined A(p,q) = (e_p | e_q), more precisely,
 % A_{p,q} = 2\pi \int_{a(1)}^{a(2)} r (e_p'(r) e_q'(r))dr
 % where e_p(r) = C_p J_0(rho(p) r) are eigenfunctions of the Laplace
 % operator, and C_p is the normalization constant (see function Cp)

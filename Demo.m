@@ -27,7 +27,7 @@ rMax = rMaxCalc(X,Y);
 
 % G = LogKernel; % G(x) = log(x)
 
-% G = Y0Kernel(0.1); % G(x) = Y0(0.1*x) => Bessel decomposition with Robin 
+G = Y0Kernel(0.1); % G(x) = Y0(0.1*x) => Bessel decomposition with Robin 
 %conditions. 
 
 % G = Y0Kernel(2); % G(x) = Y0(2*x) => Method of rescaling to a root of Y0
@@ -36,7 +36,7 @@ rMax = rMaxCalc(X,Y);
 
 % G = ThinPlate(10,25); % G(x) = 10*x^2*log(25*x)
 
-G = Kernel(@(r)(exp(-r.^2)),@(r)(-2*r.*exp(-r.^2))); % Arbitrary (smooth)
+% G = Kernel(@(r)(exp(-r.^2)),@(r)(-2*r.*exp(-r.^2))); % Arbitrary (smooth)
 % kernel
 
 % G = Kernel(@(r)(1./r.^2 ),@(r)(-2./r.^3)); % Arbitrary (singular) kernel

@@ -1,4 +1,4 @@
-function [rq] = radialQuad(a,kernel,tol,varargin)
+function [rq] = radialQuad(a,G,tol,varargin)
 % [rq] = radialQuad(a,kernel,tol,varargin)
 % Computes the coefficients of the radial quadrature of a function which
 % values and derivative are specified through an object 'kernel' of % type Kernel.
@@ -7,9 +7,9 @@ function [rq] = radialQuad(a,kernel,tol,varargin)
 % The coefficients \alpha_p are
 % chosen as the minimizers of the H10 error of this approximation. The
 % number of terms in the quadrature depends on the target error.
-% We have shown that the approximation is sparse when there holds
+% We have shown that the approximation is short when there holds
 % Delta f(1) = 0 (and even better if there exsists n>1 s.t. Delta^s f = 0 for all s <= n)
-% This can be enforced by removing a constant times r^2 to the kernel.
+% The first condition can be enforced by removing a constant times r^2 to the kernel.
 % INPUTS
 % - a : bounds within the approximation must be valid. 'a' can be specified
 % either as a scalar (in which case a(2) is replaced by 1) or a size two
@@ -18,10 +18,7 @@ function [rq] = radialQuad(a,kernel,tol,varargin)
 % [A,B], we suggest to rescale the kernel so that the approximation is sought on [a,1].
 % You can later rescale the RadialQuadrature object accordingly. Ideally, the
 % option to use a as a size-2 vector should never be needed.
-% - kernel : a Kernel object, containing the fields 'func' and 'der'. If
-% func(x) = log(x), use the LogKernel class, and if func(x) = Y_0(kx) use
-% the Y0Kernel class, since they implement more efficient versions of the
-% methods of the Kernel class.
+% - G : a Kernel object,
 % - tol : the required tolerance of the approximation. radialQuad finds the
 % smallest P for which this tolerance is achieved.
 % Optional arguments (Name-Value):
@@ -29,11 +26,9 @@ function [rq] = radialQuad(a,kernel,tol,varargin)
 % approximation. Default is Inf.
 % - 'startFreq' : If the kernel's spectrum has energy near a specific
 % frequency, we look for coefficients in this region in priority. Default is 0.
-% - 'monitorDerivative' : If this is set to true, the algorithm stops as
-% soon as the derivative is approximated up to the requested tolerance
-% (instead of the values of the function itself).
-% - 'verbose' : 0 (no text printed), 1 (some text printed), 2 (detailed
-% output)
+% - 'robinCond' : if value is c, the algorithm chooses the frequencies as 
+% roots of x -> c J_0(x) + x J_0'(x). Default is Inf (frequencies are chose
+% as zeros of J_0). 
 % OUTPUTS
 % The output 'rq' contains the following fields :
 % - a and b, the bounds of the interval of validity of the approximation
@@ -71,7 +66,7 @@ tChol = 0;
 tBess = 0;
 timeCholInv = 0;
 tTestErr = 0;
-timeTotal = tic; % this one starts immediately :)
+timeTotal = tic; % this one starts immediately
 
 %% Arguments parsing
 p = inputParser;
@@ -84,7 +79,7 @@ p.addOptional('startFreq',0,@check_startFreq);
 p.addOptional('robinCond',Inf);
 p.KeepUnmatched = true;
 
-p.parse(a,kernel,tol,varargin{:});
+p.parse(a,G,tol,varargin{:});
 vars = p.Results;
 a = vars.a;
 a_stab = a;
@@ -96,15 +91,15 @@ else
     b = 1;
 end
 
-kernel = vars.kernel;
-func = kernel.func;
-derivative = kernel.der;
+G = vars.kernel;
+func = G.func;
+derivative = G.der;
 tol = vars.tol;
 startFreq = vars.startFreq;
 Pmax = vars.Pmax;
 
 if and(startFreq == 0,b==1)
-    [lo,up] = kernel.gamma_est(tol);
+    [lo,up] = G.gamma_est(tol);
     
     % Above this value, the gram matrix is ill-conditionned.
 else
@@ -119,14 +114,20 @@ Plow = max(min(fix(lo/a),Pup-10),1);
 
 % Removing constant
 if isinf(vars.robinCond)
-    if and(abs(func(b))>1e-12,~isa(kernel,'J0Kernel'))
+    if and(abs(func(b))>1e-12,~isa(G,'J0Kernel'))
         offset = func(b);
-        func = @(x)(func(x) - func(b));
+        func = @(x)(func(x) - offset);
     else
         offset = 0;
     end
+elseif vars.robinCond > 0
+    offset = derivative(b) / vars.robinCond + func(b);
+    func = @(x)(func(x) - offset);
 else
-    offset = 0;
+    assert(vars.robinCond==0,'Robin condition constant must be > = 0');
+    if derivative(b) ~= 0
+        warning('Using Neumann condition but the kernel doesnt satisfy it.')
+    end
 end
 
 
@@ -148,10 +149,10 @@ if a==1
     reachedTol = true;
     scal01 = NaN;
     nIter = 0;
-elseif isa(kernel,'J0Kernel')
+elseif isa(G,'J0Kernel')
     % Very particuliar case of approximating J0 : no need to perform
     % projections !
-    rho = kernel.R;
+    rho = G.R;
     C = Cp(rho);
     % Cp is the normalization constant so that Cp*J0(rho |x|) has unit H10
     % norm (although not in H10 if R is not a root of J0, but anyway...)
@@ -230,7 +231,7 @@ else
         %% Compute H^1_0 scalar products on non-orthonormal basis
         
         tBessTic = tic;
-        [f_ei,normH10,scal01] = scalProds([a_stab,b],kernel,rho);
+        [f_ei,normH10,scal01] = scalProds([a_stab,b],G,rho);
         tBess = tBess + toc(tBessTic);
         
         %% Deduce orthonormal projections
@@ -295,7 +296,7 @@ else
             boundLinf = sqrt(-log(a)/(2*pi))*resH10;
             if errLinf > boundLinf
                 warning('Theroretical bound didn''t work. Either due to bad conditionning or robin conditions')
-                assert(~ any(isa(kernel,'LogKernel'),isa(kernel,'Y0Kernel')),'This should never happen in the case of standard kernels.')
+                assert(~ any(isa(G,'LogKernel'),isa(G,'Y0Kernel')),'This should never happen in the case of standard kernels.')
             end
             
         end

@@ -3,7 +3,7 @@ classdef LogKernel < Kernel
     % radial quadrature goes faster
     properties (Access = public)
         C = 1;
-        R = 1;  %such that kernel =  x -> C*log(Rx) 
+        R = 1;  %such that G(r) =  C*log(R*r) 
     end
     
     methods

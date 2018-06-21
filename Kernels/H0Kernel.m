@@ -1,7 +1,8 @@
 classdef H0Kernel < Kernel
     properties
         k; 
-        C;
+        C; % Such that G(r) = C*besselh(0,1,k*r)
+        % Hankel function of the first kind. 
     end
     methods
         function[this] = H0Kernel(kk,CC)

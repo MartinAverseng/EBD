@@ -1,8 +1,11 @@
-function [ X ] = uniformDisk( center,R,N)
+function [ X ] = uniformDisk( c,R,N)
+% X  = uniformDisk( center,R,N)
+% inputs : c = [c1,c2] center, R radius, N number of points 
+% output : X of size Nx2 cloud of points uniformly distributed on the disk.
 
 
-x = center(1);
-y = center(2);
+x = c(1);
+y = c(2);
 L = 2*R;
 X1 = L*(rand(fix(4*N/pi*1.2),1)-1/2);
 X2 = L*(rand(fix(4*N/pi*1.2),1)-1/2);
