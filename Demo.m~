@@ -12,9 +12,9 @@ close all;
 clc;
 
 
-Nx = 10^5;
-Ny = 10^5;
-fprintf('10^%s x 10^%s cloud of points \n \n',num2str(round(log(Nx)/log(10))),num2str(round(log(Ny)/log(10))))
+Nx = 10^4;
+Ny = 10^4;
+fprintf('%s x %s cloud of points',num2str(Nx,Ny)
 % Data points
 X = uniformDisk([0,0],1,Nx);
 Y = uniformDisk([0.2,0],1,Ny);
@@ -26,9 +26,9 @@ rMax = rMaxCalc(X,Y);
 
 % Kernel choice:
 
-G = LogKernel; % G(x) = log(x)
+% G = LogKernel; % G(x) = log(x)
 
-% G = Y0Kernel(0.1); % G(x) = Y0(0.1*x) => Bessel decomposition with Robin 
+G = Y0Kernel(0.1); % G(x) = Y0(0.1*x) => Bessel decomposition with Robin 
 %conditions. 
 
 % G = Y0Kernel(2); % G(x) = Y0(2*x) => Method of rescaling to a root of Y0
@@ -44,12 +44,12 @@ G = LogKernel; % G(x) = log(x)
 
 
 % Choice of the cutoff parameter. 
-lambda = 5;
+lambda = 1;
 a = lambda/sqrt(sqrt(Nx*Ny)); %this value is of the order of the optimal 
 % value for data uniformly distributed in a disk. Choose lambda by trial
 % and error to minimize the online time.
 
-tol = 1e-3; % input tolerance
+tol = 1e-2; % input tolerance
 
 % Offline computations.
 timeOff = tic;
