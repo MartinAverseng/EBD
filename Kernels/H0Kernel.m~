@@ -14,18 +14,14 @@ classdef H0Kernel < Kernel
             end
             this.k = kk;
             this.C = CC;
-            Jk = J0Kernel(kk);
-            Yk = Y0Kernel(kk);
-            modelKern = this.C*(Jk + 1i*Yk);
+            modelKern = this.C*(J0Kernel(kk) + 1i*Y0Kernel(kk));
             this.func = modelKern.func;
             this.der = modelKern.der;
             this.scalFunc = modelKern.scalFunc;
-            this.lim0 = this.C*(Jk.lim0 + 1i*Yk.lim0);
+            this.
         end
         function[out] = dilatation(this,lambda)
-            lim0keep = this.lim0;
             out = H0Kernel(this.k*lambda,this.C);
-            out.lim0 = lim0keep;
         end
         function[out] = mtimes(this,mu)
             if isa(this,'Kernel')

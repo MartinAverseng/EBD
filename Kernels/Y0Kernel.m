@@ -24,6 +24,8 @@ classdef Y0Kernel < Kernel
             kernel = kernel.setNormFunc(@(a,b)(CC*kernel.normFuncHelmholtz(a,b)));
             kernel = kernel.setStartFreq(RR);
             kernel.singular = false;
+            gamm = 0.577215664901532;
+            kernel.lim0 = 2/pi*(gamm + log(RR/2)); 
         end
         
     end
@@ -57,7 +59,9 @@ classdef Y0Kernel < Kernel
             %https://www.wolframalpha.com/input/?i=integral+from+a+to+b+of+R%5E2+x+*+(bessely(1,R+x))%5E2
         end
         function[out] = dilatation(this,lambda)
+            lim0keep = this.lim0;
             out = Y0Kernel(lambda*this.R,this.C);
+            out.lim0 = lim0keep;
         end
         function[out] = mtimes(this,mu)
             if isa(this,'Kernel')

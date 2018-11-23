@@ -12,12 +12,12 @@ close all;
 clc;
 
 
-Nx = 10^5;
-Ny = 10^5;
+Nx = 10^3;
+Ny = 10^3;
 fprintf('10^%s x 10^%s cloud of points \n \n',num2str(round(log(Nx)/log(10))),num2str(round(log(Ny)/log(10))))
 % Data points
 X = uniformDisk([0,0],1,Nx);
-Y = uniformDisk([0.2,0],1,Ny);
+Y = X; %uniformDisk([0.2,0],1,Ny);
 f = rand(size(Y,1),1); % Vector f
 
 % Parameter for rescaling
@@ -26,14 +26,14 @@ rMax = rMaxCalc(X,Y);
 
 % Kernel choice:
 
-G = LogKernel; % G(x) = log(x)
+% G = 3*LogKernel; % G(x) = log(x)
 
 % G = Y0Kernel(0.1); % G(x) = Y0(0.1*x) => Bessel decomposition with Robin 
 %conditions. 
 
-% G = Y0Kernel(2); % G(x) = Y0(2*x) => Method of rescaling to a root of Y0
+G = 3*Y0Kernel(4); % G(x) = Y0(2*x) => Method of rescaling to a root of Y0
 
-% G = Y0Kernel(1000); % G(x) = Y0(1000*x) => Selects frequencies near 0 and 1000
+% G = H0Kernel(1000); % G(x) = Y0(1000*x) => Selects frequencies near 0 and 1000
 
 % G = ThinPlate(10,25); % G(x) = 10*x^2*log(25*x)
 
@@ -67,7 +67,7 @@ fprintf('Online product computed in \n %s seconds \n',num2str(timeOn))
 
 % Error on first entry of q 
 dist = sqrt((X(1,1) - Y(:,1)).^2 + (X(1,2) - Y(:,2)).^2);
-qval = sum(G.func(dist).*f);
+qval = sum(G.eval(dist).*f);
 disp('error on first entry');
 disp(abs(qval - q(1))/(norm(q,1)));
 
@@ -75,7 +75,7 @@ disp(abs(qval - q(1))/(norm(q,1)));
 dist = sqrt((X(:,1) - Y(1,1)).^2 + (X(:,2) - Y(1,2)).^2);
 f = [1; zeros(size(Y,1)-1,1)];
 q = onlineEBD(f);
-qval = G.func(dist);
+qval = G.eval(dist);
 fprintf('Linf error for f = [1 0 0 ... 0] \n (effective error / target accuracy) \n');
 fprintf('%s / %s \n\n',num2str(max(abs(qval - q))),num2str(tol))
 disp('Done');

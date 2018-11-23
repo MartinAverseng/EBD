@@ -19,7 +19,7 @@ jdx = cell2mat(I')';
 rxy = cell2mat(rxyTemp')';
 idx = zeros(size(jdx));
 sp_ind = 1;
-for x_ind=1:length(I);
+for x_ind=1:length(I)
     idx(sp_ind:(sp_ind+length(I{x_ind})-1)) = x_ind;
     sp_ind = sp_ind + length(I{x_ind});
 end
@@ -29,8 +29,7 @@ NCI = length(rxy);
 
 if NCI ~= 0
     rxyApply = rxy;
-    rxyApply(rxyApply < 1e-8) = 1e-8/rMax;
-    exact_Interactions = G.func(rxyApply); % Exact local interactions
+    exact_Interactions = G.eval(rxyApply); % Exact local interactions
     C1 = sum(abs(rq.alpha0.*Cp(rq.rho)).*rq.rho.^2); % Bound for the second derivative. 
     Ninterp = fix(sqrt(C1)*a/sqrt(8*tol))+10; % Guarantees interpolation error < tol.
     xinterp = linspace(0,a*1.1,Ninterp);
