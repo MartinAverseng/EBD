@@ -56,7 +56,12 @@ classdef Kernel
     methods (Access = public)
         
         % Efficient Bessel Decomposition for the kernel.        
-        function[onlineEBD,rq,loc] = offlineEBD(this,X,Y,a,tol)
+        function[onlineEBD,rq,loc] = offlineEBD(this,X,Y,a,tol,varargin)
+            p = inputParser;
+            p.addOptional('grad',false)
+            p.parse(varargin{:})
+            gradOpt = p.Results.grad;
+            
             % Rescaling
             rMax = rMaxCalc(X,Y); % diameter
             x = X/rMax; % in B(0,1)
@@ -64,14 +69,37 @@ classdef Kernel
             k1 = this.dilatation(rMax); % k1 must be approximated on {a < r < 1}
             
             % Radial quadrature (Bessel decomposition in 1D)
-            rq = k1.radialQuadKernel(a,tol);
+            if gradOpt
+                rq = k1.radialQuadKernel(a,tol*rMax,'grad',gradOpt);
+            else
+                rq = k1.radialQuadKernel(a,tol);
+            end
+            
             % Circular quadrature 
             q2d = Quad2D(rq);
+            if gradOpt
+                [q2dx,q2dy] = grad(q2d);
+                q2d = {q2dx,q2dy};
+            end
             % Local correction
-            loc = localCorrections(x,y,a,k1,rq,rMax,tol);
-            
+            loc = localCorrections(x,y,a,k1,rq,tol,gradOpt);
+            if gradOpt
+                if ~isempty(loc)
+                    locx = loc{1};
+                    locy = loc{2};
+                else
+                    locx = 0;
+                    locy = 0;
+                end
+                
+            end
             % We are ready to compute fast convolutions. 
-            onlineEBD = @(v)(q2d.conv(x,y,v) + loc*v); 
+            if gradOpt
+                onlineEBD{1} = @(v)(-(q2dx.conv(x,y,v))/rMax + locx*v/rMax);
+                onlineEBD{2} = @(v)(-(q2dy.conv(x,y,v))/rMax + locy*v/rMax);
+            else
+                onlineEBD = @(v)(q2d.conv(x,y,v) + loc*v); 
+            end
         end
         
         % Display
@@ -83,6 +111,11 @@ classdef Kernel
             fun = this.func;
             out = fun(x);
             out(abs(x) < 1e-12) = this.lim0;
+        end
+        function[out] = evalDer(this,x)
+            fun = this.der;
+            out = fun(x);
+            out(abs(x) < 1e-12) = 0;
         end
         % Setters
         function[this] = setScalFunc(this,f)

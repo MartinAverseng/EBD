@@ -184,9 +184,13 @@ classdef RadialQuadrature
             err = quad - trueVal;
         end
         function[quad,err] = evalDer(this,r)
-            quad = coeff2der(this.alpha0,this.rho,r).';
-            trueVal = this.kernel.der(r);
-            err = quad - trueVal;
+            quad = coeff2der(this.alpha0,this.rho,r);
+            quad = quad(:);
+            if nargout >=2
+                trueVal = this.kernel.der(r);
+                trueVal = trueVal(:);
+                err = quad - trueVal;
+            end
         end
     end
     methods (Static)
@@ -251,7 +255,12 @@ crop = 0.999; % Needed to avoid having a 10^-16 value in the error at the outer 
 
 
 if isequal(n,'all')
-    figure('Name','Radial quadrature','NumberTitle','off')
+    if optDer
+        figure('Name','Derivative of Radial quadrature','NumberTitle','off')
+    else
+        figure('Name','Radial quadrature','NumberTitle','off')
+    end
+    
     subplot(1,3,1)
     showAux(in,1,optDer);
     
@@ -283,7 +292,12 @@ else
                 plot([a a],ylim,'k--');
             end
             axis tight
-            title('Function and its radial quadrature','Interpreter','LaTex');
+            if optDer
+                title('Derivative and its radial quadrature','Interpreter','LaTex');
+            else
+                title('Function and its radial quadrature','Interpreter','LaTex');
+            end
+            
             xlabel('r');
         case 2
             t2 = linspace(0,1,fix(min(max(rho)*5,20000)));

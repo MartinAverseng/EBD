@@ -77,13 +77,14 @@ p.addRequired('tol',@check_tol);
 p.addOptional('Pmax',MAXIMAL_NUMBER_OF_COMPONENTS,@check_Pmax);
 p.addOptional('startFreq',0,@check_startFreq);
 p.addOptional('robinCond',Inf);
+p.addOptional('grad',false);
 p.KeepUnmatched = true;
 
 p.parse(a,G,tol,varargin{:});
 vars = p.Results;
 a = vars.a;
 a_stab = a;
-
+monitorFunc = ~vars.grad;
 if length(a)==2
     b = a(2);
     a = a(1);
@@ -93,7 +94,7 @@ end
 
 G = vars.kernel;
 func = G.func;
-derivative = G.der;
+der = G.der;
 tol = vars.tol;
 startFreq = vars.startFreq;
 Pmax = vars.Pmax;
@@ -121,11 +122,11 @@ if isinf(vars.robinCond)
         offset = 0;
     end
 elseif vars.robinCond > 0
-    offset = derivative(b) / vars.robinCond + func(b);
+    offset = der(b) / vars.robinCond + func(b);
     func = @(x)(func(x) - offset);
 else
     assert(vars.robinCond==0,'Robin condition constant must be > = 0');
-    if derivative(b) ~= 0
+    if der(b) ~= 0
         warning('Using Neumann condition but the kernel doesnt satisfy it.')
     end
 end
@@ -212,10 +213,18 @@ else
         tStoreValForErrorTic = tic;
         tTestLinf = RadialQuadrature.tTestLinf(a,b,rho);
         
-        C = Cp(rho);
-        ep_test = repmat(C,1,length(tTestLinf)).*besselj(0,rho(:)*tTestLinf(:)');
-        f_test = func(tTestLinf(:));
+        if ~monitorFunc
+            tTestLinf = RadialQuadrature.tTestLinf(a*1.05,b*0.95,rho);
+        end
         
+        C = Cp(rho);
+        if monitorFunc
+            ep_test = repmat(C,1,length(tTestLinf)).*besselj(0,rho(:)*tTestLinf(:)');
+            f_test = func(tTestLinf(:));
+        else
+            ep_test = -repmat(C.*rho,1,length(tTestLinf)).*besselj(1,rho(:)*tTestLinf(:)');
+            f_test = der(tTestLinf(:));
+        end
         
         tStoreValForError = tStoreValForError + toc(tStoreValForErrorTic);
         
@@ -292,12 +301,16 @@ else
     if normH10^2 > sum(beta.^2)
         resH10 = sqrt(normH10^2 - sum(beta.^2));
         if and(a>0,b==1)
-            
-            boundLinf = sqrt(-log(a)/(2*pi))*resH10;
-            if errLinf > boundLinf
-                warning('Theroretical bound didn''t work. Either due to bad conditionning or robin conditions')
-                assert(~ any(isa(G,'LogKernel'),isa(G,'Y0Kernel')),'This should never happen in the case of standard kernels.')
+            if monitorFunc && ~isinf(vars.robinCond)
+                boundLinf = sqrt(-log(a)/(2*pi))*resH10;
+                if errLinf > boundLinf
+                    warning('Theroretical bound didn''t work. Either due to bad conditionning or error of code')
+                    assert(~ any(isa(kernel,'LogKernel'),isa(kernel,'Y0Kernel')),'This should never happen in the case of standard kernels.')
+                end
+            else
+                
             end
+                
             
         end
     else
@@ -350,7 +363,7 @@ rq = struct;
 rq.a = a;
 rq.b = b;
 rq.func = func;
-rq.derivative = derivative;
+rq.derivative = der;
 rq.tol = tol;
 rq.Pmax = Pmax;
 rq.startFreq = startFreq;

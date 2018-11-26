@@ -38,7 +38,6 @@ classdef Quad2D
                 q2d.offset = alpha(1);
                 alpha = alpha(2:end);
                 rho = rho(2:end);
-                
                 Ns = fix((Quad2D.gamma * rho  + (4*log(P*abs(alpha)/(tol+10^(-10)))))/2 + 1)*2+1;
                 N = sum(Ns);
                 xxi_nu = zeros(N,2);
@@ -120,6 +119,14 @@ classdef Quad2D
             else
                 out = 0*size(x,1);
             end
+        end
+        function[dx,dy] = grad(this)
+            dx = this;
+            dx.w_nu = this.w_nu.*(1i*this.xi_nu(:,1));
+            dx.offset = 0;
+            dy = this;
+            dy.w_nu = this.w_nu.*(1i*this.xi_nu(:,2));
+            dy.offset = 0;
         end
         % Fast convolution
         function[q,time] = conv(this,x,y,V)
