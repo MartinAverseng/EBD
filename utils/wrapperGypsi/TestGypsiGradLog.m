@@ -14,14 +14,14 @@ f = rand(size(Y,1),1); % Vector f
 
 kernel_string = 'grady[log(r)]';
 tOff = tic;
-[Gxy,loc,K] = MVproduct(kernel_string,X,Y,tol,'lambda',5);
+[dGxy,loc,K] = MVproduct(kernel_string,X,Y,tol,'lambda',5);
 tOff = toc(tOff);
 fprintf('Offline computations : %s s\n\n',num2str(tOff));
 
 % Online procedure.
 timeOn = tic;
-dxGxy = Gxy{1}(f);
-dyGxy = Gxy{2}(f);
+qx = dGxy{1}(f);
+qy = dGxy{2}(f);
 timeOn = toc(timeOn);
 fprintf('Online computations : %s seconds \n',num2str(timeOn))
 
@@ -34,8 +34,8 @@ Y_X_y = (Y(:,2) - X(1,2));
 qvalx = sum((K.evalDer(dist).*Y_X_x.*distInv).*f);
 qvaly = sum((K.evalDer(dist).*Y_X_y.*distInv).*f);
 disp('error on first entry');
-disp(abs(qvalx - dxGxy(1))/(norm(dxGxy,1)));
-disp(abs(qvaly - dyGxy(1))/(norm(dyGxy,1)));
+disp(abs(qvalx - qx(1))/(norm(qx,1)));
+disp(abs(qvaly - qy(1))/(norm(qy,1)));
 
 % Error when f = [1 0 0 ... 0]
 dist = sqrt((Y(1,1) - X(:,1)).^2 + (Y(1,2) - X(:,2)).^2);
@@ -46,10 +46,10 @@ Y_X_y = (Y(1,2) - X(:,2));
 qvalx = (K.evalDer(dist).*Y_X_x.*distInv);
 qvaly = (K.evalDer(dist).*Y_X_y.*distInv);
 f = [1; zeros(size(Y,1)-1,1)];
-dxGxy = Gxy{1}(f);
-dyGxy = Gxy{2}(f); 
+qx = dGxy{1}(f);
+qy = dGxy{2}(f); 
 fprintf('Linf error for f = [1 0 0 ... 0] \n (effective error / target accuracy) \n');
-fprintf('%s / %s \n\n',num2str(max(abs(qvalx - dxGxy))),num2str(tol))
-fprintf('%s / %s \n\n',num2str(max(abs(qvaly - dyGxy))),num2str(tol))
+fprintf('%s / %s \n\n',num2str(max(abs(qvalx - qx))),num2str(tol))
+fprintf('%s / %s \n\n',num2str(max(abs(qvaly - qy))),num2str(tol))
 disp('Done');
 
