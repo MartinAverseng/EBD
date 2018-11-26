@@ -28,16 +28,13 @@ rMax = rMaxCalc(X,Y);
 
 % G = LogKernel; % G(x) = log(x)
 
-G = Y0Kernel(0.45); % G(x) = Y0(0.1*x) => Bessel decomposition with Robin 
-%conditions. 
+G = Y0Kernel(0.3); % G(x) = Y0(0.3*x) => Bessel decomposition with Robin 
+% conditions. 
 
 % G = 3*Y0Kernel(4); % G(x) = Y0(2*x) => Method of rescaling to a root of Y0
 
 % G = H0Kernel(1000); % G(x) = Y0(1000*x) => Selects frequencies near 0 and 1000
 
-
-
-% G = ThinPlate(10,25); % G(x) = 10*x^2*log(25*x)
 
 % G = Kernel(@(r)(exp(-r.^2)),@(r)(-2*r.*exp(-r.^2))); % Arbitrary (smooth)
 % kernel
@@ -80,6 +77,7 @@ qvaly = sum((G.evalDer(dist).*Y_X_y.*distInv).*f);
 disp('error on first entry');
 disp(abs(qvalx - qx(1))/(norm(qx,1)));
 disp(abs(qvaly - qy(1))/(norm(qy,1)));
+
 % Error when f = [1 0 0 ... 0]
 dist = sqrt((Y(1,1) - X(:,1)).^2 + (Y(1,2) - X(:,2)).^2);
 distInv = 1./dist;
@@ -89,10 +87,13 @@ Y_X_y = (Y(1,2) - X(:,2));
 qvalx = (G.evalDer(dist).*Y_X_x.*distInv);
 qvaly = (G.evalDer(dist).*Y_X_y.*distInv);
 f = [1; zeros(size(Y,1)-1,1)];
+
 qx = dxGxy(f);
 qy = dyGxy(f); 
+
 fprintf('Linf error for f = [1 0 0 ... 0] \n (effective error / target accuracy) \n');
 fprintf('%s / %s \n\n',num2str(max(abs(qvalx - qx))),num2str(tol))
 fprintf('%s / %s \n\n',num2str(max(abs(qvaly - qy))),num2str(tol))
+
 disp('Done');
 

@@ -33,11 +33,11 @@ rMax = rMaxCalc(X,Y);
 
 % G = 3*Y0Kernel(4); % G(x) = Y0(2*x) => Method of rescaling to a root of Y0
 
-G = H0Kernel(1000); % G(x) = Y0(1000*x) => Selects frequencies near 0 and 1000
+% G = H0Kernel(1000); % G(x) = Y0(1000*x) => Selects frequencies near 0 and 1000
 
 
 
-% G = ThinPlate(10,25); % G(x) = 10*x^2*log(25*x)
+G = ThinPlate(10,25); % G(x) = 10*x^2*log(25*x)
 
 % G = Kernel(@(r)(exp(-r.^2)),@(r)(-2*r.*exp(-r.^2))); % Arbitrary (smooth)
 % kernel

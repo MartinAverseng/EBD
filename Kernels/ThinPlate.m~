@@ -53,7 +53,7 @@ classdef ThinPlate < Kernel
                 X2kKernel(1,-this.C*(1+log(rMax*this.R))*rMax^2); % adjust multi-Dirichlet condition.
             rq = RadialQuadrature(a,k1,tol);
             q2d = Quad2D(rq);
-            loc = localCorrections(x,y,a,k1,rq,tol,false);
+            loc = localCorrections(x,y,a,k1,rq,tol);
             onlineEBD = @(v)(q2d.conv(x,y,v) + loc*v + suppTerm(v));
             
             % We remove the added r^2 term by computing the convolution as

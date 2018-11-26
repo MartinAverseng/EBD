@@ -51,5 +51,5 @@ qy = dGxy{2}(f);
 fprintf('Linf error for f = [1 0 0 ... 0] \n (effective error / target accuracy) \n');
 fprintf('%s / %s \n\n',num2str(max(abs(qvalx - qx))),num2str(tol))
 fprintf('%s / %s \n\n',num2str(max(abs(qvaly - qy))),num2str(tol))
-disp('Done');
+disp('Michto Gypsilab! ;)');
 

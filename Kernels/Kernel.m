@@ -72,7 +72,7 @@ classdef Kernel
             q2d = Quad2D(rq);
             
             % Local correction
-            loc = localCorrections(x,y,a,k1,rq,tol);
+            loc = localCorrections(x,y,a,k1,rq,tol,false);
             % We are ready to compute fast convolutions. 
             onlineEBD = @(v)(q2d.conv(x,y,v) + loc*v); 
         end
