@@ -83,15 +83,16 @@ classdef Kernel
             x = X/rMax; % in B(0,1)
             y = Y/rMax; % in B(0,1)
             k1 = this.dilatation(rMax); % k1 must be approximated on {a < r < 1}
-            rq = k1.radialQuadKernel(a,tol*rMax,'grad',true);
+            rq = k1.radialQuadKernel(a,tol*rMax,'grad',gradOpt);
             % the tolerance is set to tol*rMax because G'(rMax*u) = 1/rMax
             % k1'(u).
             q2d = Quad2D(rq);
             [q2dx,q2dy] = grad(q2d);
+            q2d = {q2dx,q2dy};
             loc = localCorrections(x,y,a,k1,rq,tol,true);
             locx = loc{1}; locy = loc{2};
-            MVx = @(v)(-(q2dx.conv(x,y,v))/rMax + locx*v/rMax);
-            MVy = @(v)(-(q2dy.conv(x,y,v))/rMax + locy*v/rMax);
+                onlineEBD{1} = @(v)(-(q2dx.conv(x,y,v))/rMax + locx*v/rMax);
+                onlineEBD{2} = @(v)(-(q2dy.conv(x,y,v))/rMax + locy*v/rMax);
         end
         
         % Display

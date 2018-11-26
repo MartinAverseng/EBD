@@ -79,7 +79,7 @@ classdef Y0Kernel < Kernel
                 if this.R < 0.89
                     c = -this.der(1)/this.func(1);
                     assert(c > 0);
-                    rq = RadialQuadrature(a,this,tol,'robinCond',c);
+                    rq = RadialQuadrature(a,this,tol,'robinCond',c,varargin{:});
                 else
                     
                     Rtemp = nextY0root(this.R);

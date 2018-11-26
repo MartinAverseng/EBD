@@ -26,9 +26,9 @@ rMax = rMaxCalc(X,Y);
 
 % Kernel choice:
 
-G = LogKernel; % G(x) = log(x)
+% G = LogKernel; % G(x) = log(x)
 
-% G = Y0Kernel(0.1); % G(x) = Y0(0.1*x) => Bessel decomposition with Robin 
+G = Y0Kernel(0.45); % G(x) = Y0(0.1*x) => Bessel decomposition with Robin 
 %conditions. 
 
 % G = 3*Y0Kernel(4); % G(x) = Y0(2*x) => Method of rescaling to a root of Y0
@@ -56,7 +56,7 @@ tol = 1e-3; % input tolerance
 % Offline computations.
 gradOpt = true;
 timeOff = tic;
-[onlineEBD,rq,loc] = offlineEBD(G,X,Y,a,tol,'grad',gradOpt); 
+[dxGxy,dyGxy,rq,loc] = offline_dEBD(G,X,Y,a,tol); 
 timeOff = toc(timeOff);
 fprintf('Offline computations performed in \n %s seconds \n',num2str(timeOff))
 % show the radial quadrature : 
@@ -64,8 +64,8 @@ fprintf('Offline computations performed in \n %s seconds \n',num2str(timeOff))
 
 % Online procedure.
 timeOn = tic;
-qx = onlineEBD{1}(f);
-qy = onlineEBD{2}(f);
+qx = dxGxy(f);
+qy = dyGxy(f);
 timeOn = toc(timeOn);
 fprintf('Online products computed in \n %s seconds \n',num2str(timeOn))
 
@@ -89,8 +89,8 @@ Y_X_y = (Y(1,2) - X(:,2));
 qvalx = (G.evalDer(dist).*Y_X_x.*distInv);
 qvaly = (G.evalDer(dist).*Y_X_y.*distInv);
 f = [1; zeros(size(Y,1)-1,1)];
-qx = onlineEBD{1}(f);
-qy = onlineEBD{2}(f); 
+qx = dxGxy(f);
+qy = dyGxy(f); 
 fprintf('Linf error for f = [1 0 0 ... 0] \n (effective error / target accuracy) \n');
 fprintf('%s / %s \n\n',num2str(max(abs(qvalx - qx))),num2str(tol))
 fprintf('%s / %s \n\n',num2str(max(abs(qvaly - qy))),num2str(tol))
