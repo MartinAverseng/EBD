@@ -5,7 +5,7 @@
 This toolbox implements the algorithm described in "Discrete convolution in $\mathbb{R}^2$  with radial kernels using non-uniform fast Fourier transform with non-equispaced frequencies", written by Martin Averseng, and submitted to the journal Numerical Algorithms in 2018. 
 
 To test it, you can directly run Demo.m, or DemoGrad. Here follows a more detailed description of the algorithm and a tutorial. The method is designed to compute fast approximations of vectors $$q$$ which entries are given by 
-$$$q_k = \sum_{l=1}^{N_y} G(X_k - Y_l) f_l, \quad k = 1, \cdots, N_x$$$
+<a href="https://www.codecogs.com/eqnedit.php?latex=$$q_k&space;=&space;\sum_{l=1}^{N_y}&space;G(X_k&space;-&space;Y_l)&space;f_l,&space;\quad&space;k&space;=&space;1,&space;\cdots,&space;N_x$$" target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$q_k&space;=&space;\sum_{l=1}^{N_y}&space;G(X_k&space;-&space;Y_l)&space;f_l,&space;\quad&space;k&space;=&space;1,&space;\cdots,&space;N_x$$" title="$$q_k = \sum_{l=1}^{N_y} G(X_k - Y_l) f_l, \quad k = 1, \cdots, N_x$$" /></a>
 or
 $$$q_k  = \sum_{l=1}^{N_y} \nabla G(X_k - Y_l) f_l, \quad k = 1, \cdots, N_x$$$
 where $$G$$ is a radial function i.e. $$G(x) = g(|x|)$$ for some function $$g$$, $$X$$ and $$Y$$  are two clouds of $$N_x$$ and $$N_y$$ points in $$\mathbb{R}^2$$ and $$f$$ is a complex vector. 
