@@ -15,13 +15,21 @@ where <a href="https://www.codecogs.com/eqnedit.php?latex=$$G$$" target="_blank"
 
 ### 1°) Description of the algorithm
 
-The method first decomposes $$G$$ in finite Bessel series 
-$$$G(r) = \sum_{p = 1}^P \alpha_p J_0(\rho_p r) $$$
-where $$J_0$$ is the Bessel function of first kind, $$\rho$$ is the sequence of its positive zeros, and $$\alpha$$ are called the EBD (Efficient Bessel Decomposition) coefficients of $$G$$. The coefficients are chosen as the minimizers of the Sobolev $$H^1_0$$ norm error in this approximation on a ring $$r_{min} < r < r_{max}$$ where $r_{min}$ is a cutoff parameter and $$r_{max}$$ is the greatest distance occurring between two points $$X_k$$ and $$Y_l$$. The method takes the paramter $$a:= \frac{r_{min}}{r_{max}}$$ as an input. 
+The method first decomposes G in finite Bessel series 
 
-Then, each $$J_0(\rho_p r)$$ is approximated by $$J_0(\rho_p |x|) = \frac{1}{M_p}\sum_{m = 1}^{M_p} e^{i \rho_p \xi_{m}^p \cdot x}$$ where $$\xi_m^p = e^{i\frac{2m\pi}{M_p}}$$. This is the trapezoidal rule applied to the formula 
-$$J_0(|x|) = \int_{\partial B} e^{i x \cdot \xi} d\xi$$
-where the integration takes place on the boundary of the unit disk $B$ in $\mathbb{R}^2$. 
+<a href="https://www.codecogs.com/eqnedit.php?latex=$$G(r)&space;=&space;\sum_{p&space;=&space;1}^P&space;\alpha_p&space;J_0(\rho_p&space;r)&space;$$" target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$G(r)&space;=&space;\sum_{p&space;=&space;1}^P&space;\alpha_p&space;J_0(\rho_p&space;r)&space;$$" title="$$G(r) = \sum_{p = 1}^P \alpha_p J_0(\rho_p r) $$" /></a>
+
+where J0 is the Bessel function of first kind, rho is the sequence of its positive zeros, and alpha are called the EBD coefficients of G. The coefficients are chosen as the minimizers of the Sobolev H^10 norm error in this approximation on a ring rmin < r < rmax where rmin is a cutoff parameter and rmax is the greatest distance occurring between two points Xk and Yl. The method takes the paramter a = rmin/rmax as an input. 
+
+Then, each J0(rhop r) is approximated by 
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=$$J0(\rho_p&space;|x|)&space;=&space;\frac{1}{M_p}\sum_{m&space;=&space;1}^{M_p}&space;e^{i&space;\rho_p&space;\xi_{m}^p&space;\cdot&space;x}$$" target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$J0(\rho_p&space;|x|)&space;=&space;\frac{1}{M_p}\sum_{m&space;=&space;1}^{M_p}&space;e^{i&space;\rho_p&space;\xi_{m}^p&space;\cdot&space;x}$$" title="$$J0(\rho_p |x|) = \frac{1}{M_p}\sum_{m = 1}^{M_p} e^{i \rho_p \xi_{m}^p \cdot x}$$" /></a>
+
+where xi^pm = exp(i 2mpi/Mp). This is the trapezoidal rule applied to the formula 
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=$$J_0(|x|)&space;=&space;\int_{\partial&space;B}&space;e^{i&space;x&space;\cdot&space;\xi}&space;d\xi$$" target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$J_0(|x|)&space;=&space;\int_{\partial&space;B}&space;e^{i&space;x&space;\cdot&space;\xi}&space;d\xi$$" title="$$J_0(|x|) = \int_{\partial B} e^{i x \cdot \xi} d\xi$$" /></a>
+
+where the integration takes place on the boundary of the unit disk B in R2.
 
 Combining these two steps, we obtain an approximation for $$G$$ of the form 
 $$G(x) \approx \sum_{\nu = 1}^{N_\xi} \hat{\omega}_\nu e^{i \xi_\nu \cdot x}$$
