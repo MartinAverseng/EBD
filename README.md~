@@ -19,15 +19,23 @@ The method first decomposes G in finite Bessel series
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=$$G(r)&space;=&space;\sum_{p&space;=&space;1}^P&space;\alpha_p&space;J_0(\rho_p&space;r)&space;$$" target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$G(r)&space;=&space;\sum_{p&space;=&space;1}^P&space;\alpha_p&space;J_0(\rho_p&space;r)&space;$$" title="$$G(r) = \sum_{p = 1}^P \alpha_p J_0(\rho_p r) $$" /></a>
 
-where J0 is the Bessel function of first kind, rho is the sequence of its positive zeros, and $$\alpha$$ are called the EBD (Efficient Bessel Decomposition) coefficients of $$G$$. The coefficients are chosen as the minimizers of the Sobolev $$H^1_0$$ norm error in this approximation on a ring $$r_{min} < r < r_{max}$$ where $r_{min}$ is a cutoff parameter and $$r_{max}$$ is the greatest distance occurring between two points $$X_k$$ and $$Y_l$$. The method takes the paramter $$a:= \frac{r_{min}}{r_{max}}$$ as an input. 
+where J0 is the Bessel function of first kind, rho is the sequence of its positive zeros, and alpha are called the EBD coefficients of G. The coefficients are chosen as the minimizers of the Sobolev H^10 norm error in this approximation on a ring rmin < r < rmax where rmin is a cutoff parameter and rmax is the greatest distance occurring between two points Xk and Yl. The method takes the paramter a = rmin/rmax as an input. 
 
-Then, each $$J_0(\rho_p r)$$ is approximated by $$J_0(\rho_p |x|) = \frac{1}{M_p}\sum_{m = 1}^{M_p} e^{i \rho_p \xi_{m}^p \cdot x}$$ where $$\xi_m^p = e^{i\frac{2m\pi}{M_p}}$$. This is the trapezoidal rule applied to the formula 
-$$J_0(|x|) = \int_{\partial B} e^{i x \cdot \xi} d\xi$$
-where the integration takes place on the boundary of the unit disk $B$ in $\mathbb{R}^2$. 
+Then, each J0(rhop r) is approximated by 
 
-Combining these two steps, we obtain an approximation for $$G$$ of the form 
-$$G(x) \approx \sum_{\nu = 1}^{N_\xi} \hat{\omega}_\nu e^{i \xi_\nu \cdot x}$$
-valid for $$|x| > r_{min}$$. If this is replaced in the expression of $$q_k$$, we see that  $$q$$ can be approximated by non-uniform Fourier transform for any vector $$f$$. The interactions $$|X_k - Y_l| < r_{min}$$ where the approximation is not valid are corrected by a sparse matrix product. 
+<a href="https://www.codecogs.com/eqnedit.php?latex=$$J0(\rho_p&space;|x|)&space;=&space;\frac{1}{M_p}\sum_{m&space;=&space;1}^{M_p}&space;e^{i&space;\rho_p&space;\xi_{m}^p&space;\cdot&space;x}$$" target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$J0(\rho_p&space;|x|)&space;=&space;\frac{1}{M_p}\sum_{m&space;=&space;1}^{M_p}&space;e^{i&space;\rho_p&space;\xi_{m}^p&space;\cdot&space;x}$$" title="$$J0(\rho_p |x|) = \frac{1}{M_p}\sum_{m = 1}^{M_p} e^{i \rho_p \xi_{m}^p \cdot x}$$" /></a>
+
+where xi^pm = exp(i 2mpi/Mp). This is the trapezoidal rule applied to the formula 
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=$$J_0(|x|)&space;=&space;\int_{\partial&space;B}&space;e^{i&space;x&space;\cdot&space;\xi}&space;d\xi$$" target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$J_0(|x|)&space;=&space;\int_{\partial&space;B}&space;e^{i&space;x&space;\cdot&space;\xi}&space;d\xi$$" title="$$J_0(|x|) = \int_{\partial B} e^{i x \cdot \xi} d\xi$$" /></a>
+
+where the integration takes place on the boundary of the unit disk B in R2.
+
+Combining these two steps, we obtain an approximation for G of the form 
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=$$G(x)&space;\approx&space;\sum_{\nu&space;=&space;1}^{N_\xi}&space;\hat{\omega}_\nu&space;e^{i&space;\xi_\nu&space;\cdot&space;x}$$" target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$G(x)&space;\approx&space;\sum_{\nu&space;=&space;1}^{N_\xi}&space;\hat{\omega}_\nu&space;e^{i&space;\xi_\nu&space;\cdot&space;x}$$" title="$$G(x) \approx \sum_{\nu = 1}^{N_\xi} \hat{\omega}_\nu e^{i \xi_\nu \cdot x}$$" /></a>
+
+valid for |x| > rmin. If this is replaced in the expression of qk, we see that q can be approximated by non-uniform Fourier transform for any vector f. The interactions |Xk - Yl| < rmin where the approximation is not valid are corrected by a sparse matrix product. 
 
 
 The code is in Matlab language. The implementation of the NUFFT is borrowed from Leslie Greengard, June-Yub Lee and Zydrunas Gimbutas (see license file in the libGgNufft2D folder). The ideas come from a similar method in 3D called Sparse Cardinal Sine Decomposition, developped by François Alouges and Matthieu Aussal, also published in Numerical Algorithms. 
@@ -35,7 +43,7 @@ The code is in Matlab language. The implementation of the NUFFT is borrowed from
 ### 2°) Tutorial
 
 #### A. Simple EBD
-- Create the arrays $$X$$ and $$Y$$ of sizes $$N_x \times  2$$ and $$N_y \times 2$$ (points in R^2). 
+- Create the arrays X and Y of sizes Nx x  2 and Ny x 2 (points in R^2). 
 - Create a kernel by calling 
 ```
 G = Kernel(fun,der);
@@ -56,10 +64,10 @@ G = ThinPlate(a,b) % represents G(x) = a*x^2*log(b*x);
 (and others, see folder Kernels).
 
 - Define the tolerance in the error of approximation. The method guarantees that 
-the Bessel decomposition of $$G$$ in the ring is accurate at the tolerance level. 
-This implies that the maximal error on an entry of $$q_k$$ is `tol*norm(q,1)`.  
+the Bessel decomposition of G in the ring is accurate at the tolerance level. 
+This implies that the maximal error on an entry of qk is `tol*norm(q,1)`.  
 
-- Define the parameter $$a$$ (the ratio between $$r_{min}$$ and $$r_{max}$$.) $$a$$ is roughly the proportion of interactions that will be computed exactly. There is an optimal value of $$a$$ for which the evaluation of the convolution is the fastest, but it is not possible to know it in advance. However, when $$X$$ and $$Y$$ are uniformly distributed on a disk, the optimal $$a$$ is of the order $$\frac{1}{(N_x N_y)^{1/4}}$$, and if they are uniformly distributed on a curve, the optimal $$a$$ is of the order $$\frac{1}{(N_x N_y)^{1/3}}$$. If $$a$$ is large, a lot of interactions are computed exactly while the Bessel decomposition will have only a few terms. If $$a$$ is small, the opposite will happen. 
+- Define the parameter $$a$$ (the ratio between r_{min}$$ and $$r_{max}$$.) $$a$$ is roughly the proportion of interactions that will be computed exactly. There is an optimal value of $$a$$ for which the evaluation of the convolution is the fastest, but it is not possible to know it in advance. However, when $$X$$ and $$Y$$ are uniformly distributed on a disk, the optimal $$a$$ is of the order $$\frac{1}{(N_x N_y)^{1/4}}$$, and if they are uniformly distributed on a curve, the optimal $$a$$ is of the order $$\frac{1}{(N_x N_y)^{1/3}}$$. If $$a$$ is large, a lot of interactions are computed exactly while the Bessel decomposition will have only a few terms. If $$a$$ is small, the opposite will happen. 
 
 - You can now call
 ```

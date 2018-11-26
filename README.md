@@ -31,9 +31,11 @@ where xi^pm = exp(i 2mpi/Mp). This is the trapezoidal rule applied to the formul
 
 where the integration takes place on the boundary of the unit disk B in R2.
 
-Combining these two steps, we obtain an approximation for $$G$$ of the form 
-$$G(x) \approx \sum_{\nu = 1}^{N_\xi} \hat{\omega}_\nu e^{i \xi_\nu \cdot x}$$
-valid for $$|x| > r_{min}$$. If this is replaced in the expression of $$q_k$$, we see that  $$q$$ can be approximated by non-uniform Fourier transform for any vector $$f$$. The interactions $$|X_k - Y_l| < r_{min}$$ where the approximation is not valid are corrected by a sparse matrix product. 
+Combining these two steps, we obtain an approximation for G of the form 
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=$$G(x)&space;\approx&space;\sum_{\nu&space;=&space;1}^{N_\xi}&space;\hat{\omega}_\nu&space;e^{i&space;\xi_\nu&space;\cdot&space;x}$$" target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$G(x)&space;\approx&space;\sum_{\nu&space;=&space;1}^{N_\xi}&space;\hat{\omega}_\nu&space;e^{i&space;\xi_\nu&space;\cdot&space;x}$$" title="$$G(x) \approx \sum_{\nu = 1}^{N_\xi} \hat{\omega}_\nu e^{i \xi_\nu \cdot x}$$" /></a>
+
+valid for |x| > rmin. If this is replaced in the expression of qk, we see that q can be approximated by non-uniform Fourier transform for any vector f. The interactions |Xk - Yl| < rmin where the approximation is not valid are corrected by a sparse matrix product. 
 
 
 The code is in Matlab language. The implementation of the NUFFT is borrowed from Leslie Greengard, June-Yub Lee and Zydrunas Gimbutas (see license file in the libGgNufft2D folder). The ideas come from a similar method in 3D called Sparse Cardinal Sine Decomposition, developped by François Alouges and Matthieu Aussal, also published in Numerical Algorithms. 
@@ -41,7 +43,7 @@ The code is in Matlab language. The implementation of the NUFFT is borrowed from
 ### 2°) Tutorial
 
 #### A. Simple EBD
-- Create the arrays $$X$$ and $$Y$$ of sizes $$N_x \times  2$$ and $$N_y \times 2$$ (points in R^2). 
+- Create the arrays X and Y of sizes Nx x  2 and Ny x 2 (points in R^2). 
 - Create a kernel by calling 
 ```
 G = Kernel(fun,der);
@@ -62,10 +64,10 @@ G = ThinPlate(a,b) % represents G(x) = a*x^2*log(b*x);
 (and others, see folder Kernels).
 
 - Define the tolerance in the error of approximation. The method guarantees that 
-the Bessel decomposition of $$G$$ in the ring is accurate at the tolerance level. 
-This implies that the maximal error on an entry of $$q_k$$ is `tol*norm(q,1)`.  
+the Bessel decomposition of G in the ring is accurate at the tolerance level. 
+This implies that the maximal error on an entry of qk is `tol*norm(q,1)`.  
 
-- Define the parameter $$a$$ (the ratio between $$r_{min}$$ and $$r_{max}$$.) $$a$$ is roughly the proportion of interactions that will be computed exactly. There is an optimal value of $$a$$ for which the evaluation of the convolution is the fastest, but it is not possible to know it in advance. However, when $$X$$ and $$Y$$ are uniformly distributed on a disk, the optimal $$a$$ is of the order $$\frac{1}{(N_x N_y)^{1/4}}$$, and if they are uniformly distributed on a curve, the optimal $$a$$ is of the order $$\frac{1}{(N_x N_y)^{1/3}}$$. If $$a$$ is large, a lot of interactions are computed exactly while the Bessel decomposition will have only a few terms. If $$a$$ is small, the opposite will happen. 
+- Define the parameter a (the ratio between rmin and rmax.) It is roughly the proportion of interactions that will be computed exactly. There is an optimal value of a for which the evaluation of the convolution is the fastest, but it is not possible to know it in advance. However, when X and Y are uniformly distributed on a disk, the optimal a is of the order <a href="https://www.codecogs.com/eqnedit.php?latex=$$\frac{1}{(N_x&space;N_y)^{1/4}}$$" target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$\frac{1}{(N_x&space;N_y)^{1/4}}$$" title="$$\frac{1}{(N_x N_y)^{1/4}}$$" /></a>, and if they are uniformly distributed on a curve, the optimal a is of the order <a href="https://www.codecogs.com/eqnedit.php?latex=$$\frac{1}{(N_x&space;N_y)^{1/3}}$$" target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$\frac{1}{(N_x&space;N_y)^{1/3}}$$" title="$$\frac{1}{(N_x N_y)^{1/3}}$$" /></a>. If a is large, a lot of interactions are computed exactly while the Bessel decomposition will have only a few terms. If a is small, the opposite will happen. 
 
 - You can now call
 ```
@@ -85,8 +87,15 @@ and also check all its properties (including coefficients, frenquencies used, ac
 ### B. Derivative EBD 
 
 If you rather want to compute the vectors 
-$$[q_1(i),q_2(i)] = \sum_{j=1}^{N_y} \nabla{G}(Y_j - X_i)f_j$$ 
-where for a point $$x$$ in $$\mathbb{R}^2$$,  $$\nabla G(x) = G'(|x|)\frac{ x}{|x|}$$, you may call `offline_dEBD`instead of `offlineEBD`. The syntax is
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=$$[q_1(k),q_2(k)]&space;=&space;\sum_{l=1}^{N_y}&space;\nabla{G}(Y_l&space;-&space;X_k)f_l$$" target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$[q_1(k),q_2(k)]&space;=&space;\sum_{l=1}^{N_y}&space;\nabla{G}(Y_l&space;-&space;X_k)f_l$$" title="$$[q_1(k),q_2(k)] = \sum_{l=1}^{N_y} \nabla{G}(Y_l - X_k)f_l$$" /></a>
+
+where for a point x in <a href="https://www.codecogs.com/eqnedit.php?latex=$$\mathbb{R}^2$$" target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$\mathbb{R}^2$$" title="$$\mathbb{R}^2$$" /></a>,  
+
+<a href="https://www.codecogs.com/eqnedit.php?latex=$$\nabla&space;G(x)&space;=&space;G'(|x|)\frac{&space;x}{|x|}$$," target="_blank"><img src="https://latex.codecogs.com/gif.latex?$$\nabla&space;G(x)&space;=&space;G'(|x|)\frac{&space;x}{|x|}$$," title="$$\nabla G(x) = G'(|x|)\frac{ x}{|x|}$$," /></a>
+
+you may call `offline_dEBD`instead of `offlineEBD`. The syntax is
+
 ```
 [MVx,MVy, rq, loc] = offlineEBD(G,X,Y,a,tol);
 ```
@@ -94,5 +103,6 @@ where, for example, `MVx`contains the handle function such that
 ```
 q1 = MVx(f)
 ```
-is the component $$q_1$$ of the convolution with $$\nabla G$$. 
+is the component q1 of the convolution with \nabla G. 
 
+    
