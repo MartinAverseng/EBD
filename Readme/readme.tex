@@ -93,13 +93,13 @@ The code is in Matlab language. The implementation of the NUFFT is borrowed from
 	\[\nabla G(x) = g'(|x|) \frac{x}{|x|}\]
 	where $G(x) = g(|x|)$, you may call \mcode{offline_dEBD} instead of \mcode{offlineEBD}. The syntax is 
 	\begin{lstlisting}
-		[MVx,MVy, rq, loc] = offlineEBD(G,X,Y,a,tol);
+		[MVx,MVy,rq,loc] = offline_dEBD(G,X,Y,a,tol);
 	\end{lstlisting}
 	where, for example, \mcode{MVx} contains the function handle such that 
 	\begin{lstlisting}
 	q1 = MVx(f);
 	\end{lstlisting}
-	is the component $q_1$ of the convolution. 
+	is the component $q_1$ of the convolution, and \mcode{loc} is a $2\times1$ cell containing the sparse correction matrices for each component
 		
 \end{itemize}
 
