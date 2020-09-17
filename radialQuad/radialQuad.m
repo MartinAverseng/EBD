@@ -50,7 +50,7 @@ function [rq] = radialQuad(a,G,tol,varargin)
 % - scal01 : values of 2\pi\int_{0}^{1} r(f'(r)ep'(r))dr
 % - nIter : number of iterations the function has needed.
 
-MAXIMAL_NUMBER_OF_COMPONENTS = 2500;
+MAXIMAL_NUMBER_OF_COMPONENTS = 4000;
 % You can change this value if you have enough memory.
 % You can set it to Inf but it could lead to 'Out of Memory' errors.
 if nargin ==0
